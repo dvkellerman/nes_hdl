@@ -24,8 +24,8 @@ def main():
         for i in range(25):
             await ctx.tick()
 
-            addr = ctx.get(cpu.addr)
-            ctx.set(cpu.data_in, mem[addr])
+            addr = ctx.get(cpu.bus.addr)
+            ctx.set(cpu.bus.data_rd, mem[addr])
 
             if i < 15 or i % 5 == 0:
                 pc = ctx.get(cpu.pc)
@@ -33,12 +33,12 @@ def main():
                 opcode = ctx.get(cpu.opcode)
                 operand = ctx.get(cpu.operand)
                 eff_addr = ctx.get(cpu.eff_addr)
-                data_in = ctx.get(cpu.data_in)
+                data_rd = ctx.get(cpu.bus.data_rd)
 
                 print(
                     f"Cycle {i:2d}: PC=0x{pc:04X}, OPCODE=0x{opcode:02X}, "
                     f"OPND=0x{operand:02X}, EA=0x{eff_addr:04X}, "
-                    f"ADDR=0x{addr:04X}, DATA_IN=0x{data_in:02X}, A=0x{a:02X}"
+                    f"ADDR=0x{addr:04X}, DATA_RD=0x{data_rd:02X}, A=0x{a:02X}"
                 )
 
         final_a = ctx.get(cpu.a)

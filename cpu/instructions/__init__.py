@@ -23,7 +23,7 @@ def execute_instruction(m, cpu, opcode):
         ):
             m.d.comb += resolved.eq(cpu.operand)
         with m.Default():
-            m.d.comb += resolved.eq(cpu.data_in)
+            m.d.comb += resolved.eq(cpu.bus.data_rd)
 
     add_loads_stores(m, cpu, opcode, resolved)
     add_alu_ops(m, cpu, opcode, resolved)

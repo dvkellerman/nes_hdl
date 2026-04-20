@@ -2,14 +2,13 @@ from amaranth import *
 from amaranth.lib.wiring import Component, In, Out
 from amaranth.lib.memory import Memory
 
+from cpu.bus_sig import CpuBus
+
 
 class SyncRAM(Component):
     """Simple synchronous RAM for CPU testing."""
 
-    addr: In(16)
-    data_in: In(8)
-    data_out: Out(8)
-    we: In(1)
+    bus: In(CpuBus)
 
     def __init__(self, size=0x10000, init_data=None):
         self.size = size
@@ -28,11 +27,11 @@ class SyncRAM(Component):
         m.submodules.wr = wr
 
         m.d.comb += [
-            rd.addr.eq(self.addr),
-            self.data_out.eq(rd.data),
-            wr.addr.eq(self.addr),
-            wr.data.eq(self.data_in),
-            wr.en.eq(self.we),
+            rd.addr.eq(self.bus.addr),
+            self.bus.data_rd.eq(rd.data),
+            wr.addr.eq(self.bus.addr),
+            wr.data.eq(self.bus.data_wr),
+            wr.en.eq(self.bus.we),
         ]
 
         return m

@@ -32,20 +32,20 @@ def add_loads_stores(m, cpu, opcode, resolved):
         # STA -- all addressing modes
         with m.Case(0x85, 0x95, 0x8D, 0x9D, 0x99, 0x81, 0x91):
             m.d.sync += [
-                cpu.data_out.eq(cpu.a),
-                cpu.we.eq(1),
+                cpu.bus.data_wr.eq(cpu.a),
+                cpu.bus.we.eq(1),
             ]
 
         # STX -- all addressing modes
         with m.Case(0x86, 0x96, 0x8E):
             m.d.sync += [
-                cpu.data_out.eq(cpu.x),
-                cpu.we.eq(1),
+                cpu.bus.data_wr.eq(cpu.x),
+                cpu.bus.we.eq(1),
             ]
 
         # STY -- all addressing modes
         with m.Case(0x84, 0x94, 0x8C):
             m.d.sync += [
-                cpu.data_out.eq(cpu.y),
-                cpu.we.eq(1),
+                cpu.bus.data_wr.eq(cpu.y),
+                cpu.bus.we.eq(1),
             ]

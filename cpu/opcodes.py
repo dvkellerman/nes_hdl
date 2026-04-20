@@ -1,4 +1,5 @@
 from amaranth import *
+from collections import defaultdict
 from typing import Tuple, Optional
 
 # Addressing Mode Enumeration
@@ -74,3 +75,11 @@ def get_addr_mode(op: int) -> int:
 def get_cycles(op: int) -> int:
     """Get base cycles for an opcode."""
     return get_opcode_info(op)[2]
+
+
+def opcodes_by_addr_mode() -> dict[int, list[int]]:
+    """Group opcode values by their addressing mode."""
+    groups: dict[int, list[int]] = defaultdict(list)
+    for op, (_, mode, _) in OPCODES.items():
+        groups[mode].append(op)
+    return dict(groups)

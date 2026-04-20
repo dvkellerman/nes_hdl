@@ -13,43 +13,43 @@ def calc_effective_addr(m, cpu):
         with m.Case(AddrMode.ZP0):
             m.d.comb += [
                 cpu.eff_addr.eq(cpu.operand),
-                cpu.addr.eq(cpu.operand),
+                cpu.bus.addr.eq(cpu.operand),
             ]
 
         with m.Case(AddrMode.ZPX):
             m.d.comb += [
                 cpu.eff_addr.eq((cpu.operand + cpu.x)[:8]),
-                cpu.addr.eq((cpu.operand + cpu.x)[:8]),
+                cpu.bus.addr.eq((cpu.operand + cpu.x)[:8]),
             ]
 
         with m.Case(AddrMode.ZPY):
             m.d.comb += [
                 cpu.eff_addr.eq((cpu.operand + cpu.y)[:8]),
-                cpu.addr.eq((cpu.operand + cpu.y)[:8]),
+                cpu.bus.addr.eq((cpu.operand + cpu.y)[:8]),
             ]
 
         with m.Case(AddrMode.ABS):
             m.d.comb += [
                 cpu.eff_addr.eq(cpu.addr_temp),
-                cpu.addr.eq(cpu.addr_temp),
+                cpu.bus.addr.eq(cpu.addr_temp),
             ]
 
         with m.Case(AddrMode.ABX):
             m.d.comb += [
                 cpu.eff_addr.eq(cpu.addr_temp + cpu.x),
-                cpu.addr.eq(cpu.addr_temp + cpu.x),
+                cpu.bus.addr.eq(cpu.addr_temp + cpu.x),
             ]
 
         with m.Case(AddrMode.ABY):
             m.d.comb += [
                 cpu.eff_addr.eq(cpu.addr_temp + cpu.y),
-                cpu.addr.eq(cpu.addr_temp + cpu.y),
+                cpu.bus.addr.eq(cpu.addr_temp + cpu.y),
             ]
 
         with m.Case(AddrMode.IND):
             m.d.comb += [
                 cpu.eff_addr.eq(cpu.addr_temp),
-                cpu.addr.eq(cpu.addr_temp),
+                cpu.bus.addr.eq(cpu.addr_temp),
             ]
 
         with m.Case(AddrMode.IZX):
@@ -57,13 +57,13 @@ def calc_effective_addr(m, cpu):
             m.d.comb += [
                 ptr.eq((cpu.operand + cpu.x)[:8]),
                 cpu.eff_addr.eq(ptr),
-                cpu.addr.eq(ptr),
+                cpu.bus.addr.eq(ptr),
             ]
 
         with m.Case(AddrMode.IZY):
             m.d.comb += [
                 cpu.eff_addr.eq((cpu.operand + cpu.y)[:8]),
-                cpu.addr.eq((cpu.operand + cpu.y)[:8]),
+                cpu.bus.addr.eq((cpu.operand + cpu.y)[:8]),
             ]
 
         with m.Case(AddrMode.REL):

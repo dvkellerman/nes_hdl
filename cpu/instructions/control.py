@@ -60,8 +60,8 @@ def add_control(m, cpu, opcode):
         # JSR Absolute (simplified -- pushes high byte, decrements SP)
         with m.Case(0x20):
             m.d.sync += [
-                cpu.data_out.eq(((cpu.pc - 1) >> 8) & 0xFF),
-                cpu.we.eq(1),
+                cpu.bus.data_wr.eq(((cpu.pc - 1) >> 8) & 0xFF),
+                cpu.bus.we.eq(1),
                 cpu.sp.eq(cpu.sp - 1),
             ]
 
@@ -80,10 +80,10 @@ def add_control(m, cpu, opcode):
         with m.Case(0x40):
             m.d.sync += [
                 cpu.sp.eq(cpu.sp + 1),
-                cpu.flag_c.eq(cpu.data_in[0]),
-                cpu.flag_z.eq(cpu.data_in[1]),
-                cpu.flag_i.eq(cpu.data_in[2]),
-                cpu.flag_d.eq(cpu.data_in[3]),
-                cpu.flag_v.eq(cpu.data_in[5]),
-                cpu.flag_n.eq(cpu.data_in[7]),
+                cpu.flag_c.eq(cpu.bus.data_rd[0]),
+                cpu.flag_z.eq(cpu.bus.data_rd[1]),
+                cpu.flag_i.eq(cpu.bus.data_rd[2]),
+                cpu.flag_d.eq(cpu.bus.data_rd[3]),
+                cpu.flag_v.eq(cpu.bus.data_rd[5]),
+                cpu.flag_n.eq(cpu.bus.data_rd[7]),
             ]
