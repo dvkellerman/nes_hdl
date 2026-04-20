@@ -1,77 +1,81 @@
 # Progress Tracker: NES Hardware Clone (Amaranth HDL)
-*Version: 1.0*
+*Version: 2.0*
 *Created: 2026-04-20*
 *Last Updated: 2026-04-20*
 
 ## Project Status
-Overall Completion: ~10%
+Overall Completion: ~15%
 
 ## What Works
-- Opcode table: Complete -- 151 opcodes defined with mnemonic, addressing mode, and cycle count
-- Addressing modes: Complete -- all 13 modes have combinational effective-address logic
-- Basic instruction subset: ~50% of instructions have execution logic (loads, stores, inc/dec, transfers, flags, branches, jumps, stack ops, NOP)
-- Reset vector: CPU reads from $FFFC on reset
-- Test infrastructure: Amaranth Simulator testbench runs `LDA #$05` and verifies register state
-- Build pipeline: Makefile with targets for venv, sim, verilog, verilate, emulator
+- **Architecture**: CPU and Memory use Amaranth Component with proper In/Out ports and shared CpuBus Signature
+- **Opcode table**: Complete -- 151 opcodes defined with mnemonic, addressing mode, and cycle count
+- **Addressing modes**: All 13 modes have combinational effective-address logic
+- **Instruction execution**: All legal 6502 opcodes have execution logic:
+  - Loads: LDA, LDX, LDY (all addressing modes, deduplicated)
+  - Stores: STA, STX, STY (all addressing modes)
+  - ALU: ADC, SBC, AND, ORA, EOR (with carry/overflow flags)
+  - Compare: CMP, CPX, CPY, BIT
+  - Inc/Dec: INC, DEC (memory), INX, DEX, INY, DEY (registers)
+  - Shifts: ASL, LSR, ROL, ROR (accumulator + memory)
+  - Branches: BPL, BMI, BVC, BVS, BCC, BCS, BNE, BEQ
+  - Jumps: JMP absolute/indirect (simplified), JSR (stub), RTS (stub)
+  - Stack: PHA, PLA, PHP, PLP
+  - Transfers: TAX, TXA, TAY, TYA, TSX, TXS
+  - Flags: CLC, SEC, CLI, SEI, CLD, SED, CLV
+  - Control: BRK (stub), RTI (stub), NOP
+- **Addr-mode decode**: Auto-generated from OPCODES table (single source of truth)
+- **Bus interface**: Reusable CpuBus Signature enables connect() wiring
+- **Build pipeline**: Makefile with Homebrew Python 3.14 + builtin-yosys
+- **Code quality**: Every file under 200 lines, no circular imports, no duplication
 
 ## What's In Progress
-- CPU instruction execution: 50% -- missing ALU ops, shifts, and correct JSR/RTS
-- FSM cycle accuracy: 0% -- needs redesign from fixed 5-cycle to variable-length
-- PC advancement logic: 0% -- needs to respect instruction byte count
+- FSM cycle accuracy: 0% -- every instruction still takes 5 fixed cycles
+- PC advancement: 0% -- always advances 3 bytes regardless of instruction size
+- JSR/RTS: Stubs -- don't properly push/pull return addresses
+- BRK/RTI: Stubs -- don't do full interrupt sequence
+- Indirect addressing: Simplified -- IZX/IZY don't do double memory reads
 
 ## What's Left To Build
 
 ### Phase 2: CPU Core (current)
-- [ ] ALU instructions (ADC, SBC, AND, ORA, EOR, BIT, CMP, CPX, CPY) -- HIGH
-- [ ] Shift/rotate instructions (ASL, LSR, ROL, ROR) -- HIGH
 - [ ] Variable cycle timing in FSM -- HIGH
 - [ ] Correct PC advancement per instruction size -- HIGH
-- [ ] Complete JSR/RTS -- HIGH
-- [ ] BRK/RTI interrupt handling -- MEDIUM
-- [ ] Indirect addressing double-reads -- MEDIUM
+- [ ] Complete JSR (push both bytes of return addr, set PC) -- HIGH
+- [ ] Complete RTS (pull return addr, set PC) -- HIGH
+- [ ] Indirect addressing double-reads (IZX, IZY) -- MEDIUM
+- [ ] JMP indirect page-boundary bug emulation -- MEDIUM
+- [ ] Complete BRK (push PC+2, push P|B, read IRQ vector) -- MEDIUM
+- [ ] Complete RTI (pull P, pull PC) -- MEDIUM
 - [ ] Klaus Dormann test suite -- HIGH (gate for Phase 3)
-- [ ] Clean up stale modules (alu.py, decoder.py, registers.py) -- LOW
+- [ ] Remove stale modules (cpu/alu.py, cpu/decoder.py, cpu/registers.py) -- LOW
 
 ### Phase 3: System Bus & Memory Map
-- [ ] CPU memory bus with address decoding -- HIGH
-- [ ] 2KB Work RAM with mirroring -- HIGH
-- [ ] NROM (Mapper 0) cartridge interface -- HIGH
-- [ ] OAM DMA -- MEDIUM
+- [ ] CPU memory bus with address decoding
+- [ ] 2KB Work RAM with mirroring
+- [ ] NROM (Mapper 0) cartridge interface
+- [ ] OAM DMA
 
 ### Phase 4: PPU (Ricoh 2C02)
-- [ ] PPU memory bus (VRAM, palettes) -- HIGH
-- [ ] Background rendering (nametables, attribute tables, scrolling) -- HIGH
-- [ ] Sprite rendering (OAM, sprite evaluation) -- HIGH
-- [ ] VBlank NMI generation -- HIGH
-- [ ] blargg's PPU test ROM verification -- HIGH
+- [ ] PPU memory bus, background/sprite rendering, scrolling, VBlank NMI
 
 ### Phase 5: Verilator + SDL2 Frontend
-- [ ] Amaranth -> full system Verilog generation -- HIGH
-- [ ] C++ Verilator wrapper -- HIGH
-- [ ] SDL2 video rendering -- HIGH
-- [ ] SDL2 controller input mapping -- MEDIUM
-- [ ] SDL2 audio output (after APU) -- MEDIUM
+- [ ] Verilog generation, C++ wrapper, SDL2 video/input
 
 ### Phase 6: APU & Advanced Mappers
-- [ ] Pulse channels (x2) -- MEDIUM
-- [ ] Triangle channel -- MEDIUM
-- [ ] Noise channel -- MEDIUM
-- [ ] DMC channel -- LOW
-- [ ] MMC1 mapper -- MEDIUM
-- [ ] MMC3 mapper -- LOW
+- [ ] 5 audio channels, MMC1/MMC3 mappers
 
 ## Known Issues
-- **Venv broken on macOS**: Existing venv was built on Linux (ELF x86-64). Must recreate. SEVERITY: Blocking
-- **Missing Yosys**: Cannot generate Verilog. SEVERITY: Blocking for Phase 5, not for simulation
-- **Missing Verilator**: Cannot compile C++ emulator. SEVERITY: Blocking for Phase 5 only
-- **Fixed 5-cycle FSM**: Every instruction takes exactly 5 cycles regardless of real timing. SEVERITY: High -- fundamental correctness issue
-- **PC always advances 3**: 1-byte and 2-byte instructions read beyond their operands. SEVERITY: High -- fundamental correctness issue
-- **Incomplete JSR/RTS**: JSR only pushes high byte; RTS only increments SP. SEVERITY: High -- subroutine calls are broken
-- **Stale modules**: `alu.py`, `decoder.py`, `registers.py` are unused and may cause confusion. SEVERITY: Low
+- **Venv broken on macOS**: Must run `make deepclean && make venv`. SEVERITY: Blocking for sim
+- **Fixed 5-cycle FSM**: Fundamental correctness issue. SEVERITY: High
+- **PC always advances 3**: Fundamental correctness issue. SEVERITY: High
+- **Incomplete JSR/RTS**: Subroutine calls don't work. SEVERITY: High
+- **Simplified indirect modes**: IZX/IZY produce wrong addresses. SEVERITY: Medium
+- **Stale modules**: cpu/alu.py, cpu/decoder.py, cpu/registers.py are dead code. SEVERITY: Low
 
 ## Milestones
-- [ ] M1: All 6502 legal opcodes implemented with correct execution logic
-- [ ] M2: Variable cycle timing and correct PC handling
+- [x] M0: Project scaffolded, Component architecture, all opcodes have execution logic
+- [ ] M1: Variable cycle timing and correct PC handling
+- [ ] M2: JSR/RTS/BRK/RTI fully working
 - [ ] M3: Klaus Dormann 6502 functional test suite passes
 - [ ] M4: System bus and NROM cartridge working
 - [ ] M5: PPU renders first frame
