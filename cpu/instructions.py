@@ -1,12 +1,12 @@
 from amaranth import *
 from amaranth.lib.coding import *
 from cpu.opcodes import AddrMode
-
+from cpu.cpu import CPU
 class Instructions:
     """6502 instruction execution logic."""
     
     @staticmethod
-    def execute(m: Module, cpu, opcode: Signal) -> None:
+    def execute(m: Module, cpu: CPU, opcode: Signal) -> None:
         """Add instruction execution logic based on opcode."""
         
         with m.Switch(opcode):

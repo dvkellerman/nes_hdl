@@ -1,14 +1,5 @@
 from amaranth import *
-from amaranth.lib.coding import *
 from typing import Tuple, Optional
-
-# CPU State Machine States
-class CPUState:
-    FETCH_OPCODE = 0
-    FETCH_OPERAND_1 = 1
-    FETCH_OPERAND_2 = 2
-    EXECUTE = 3
-    WRITE_BACK = 4
 
 # Addressing Mode Enumeration
 class AddrMode:

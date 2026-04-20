@@ -2,16 +2,24 @@ from amaranth import *
 from amaranth.lib.coding import *
 from typing import Optional
 
-from cpu.opcodes import CPUState, AddrMode, get_opcode_info
+from cpu.opcodes import AddrMode, get_opcode_info
 from cpu.addressing import AddressingMode
 from cpu.instructions import Instructions
+    
+# CPU State Machine States
+class CPUState:
+    FETCH_OPCODE = 0
+    FETCH_OPERAND_1 = 1
+    FETCH_OPERAND_2 = 2
+    EXECUTE = 3
+    WRITE_BACK = 4
 
 class CPU(Elaboratable):
     """MOS 6502 CPU implementation in Amaranth HDL."""
     
     def __init__(self, read_only: bool = False) -> None:
         self.read_only = read_only
-        
+            
         # Clock and control signals
         self.clk = Signal()
         self.rst = Signal()

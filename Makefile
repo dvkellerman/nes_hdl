@@ -1,6 +1,7 @@
 # NES Emulator in Amaranth HDL Makefile
 
 # Python environment
+PYTHON3 = /opt/homebrew/opt/python@3.14/bin/python3.14
 VENV = venv
 PYTHON = $(VENV)/bin/python
 PIP = $(VENV)/bin/pip
@@ -16,21 +17,22 @@ all: venv
 
 # Setup Python Virtual Environment
 venv:
+	rm -rf venv
 	@echo "Setting up Python virtual environment..."
-	python3 -m venv $(VENV)
+	$(PYTHON3) -m venv $(VENV)
 	$(PIP) install --upgrade pip
-	$(PIP) install amaranth amaranth-boards
+	$(PIP) install 'amaranth[builtin-yosys]' amaranth-boards
 
 # Run pure Python Amaranth testbenches
 sim: venv
 	@echo "Running Amaranth simulations..."
-	$(PYTHON) tests/test_cpu.py
+	$(PYTHON) tests/CPU/test_cpu.py
 
 # Generate Verilog from Amaranth
 verilog: venv
 	@echo "Generating Verilog..."
 	mkdir -p build
-	$(PYTHON) emulator/generate.py > build/nes_system.v
+	$(PYTHON) emulator/generate.py
 
 # Compile Verilog using Verilator
 verilate: verilog

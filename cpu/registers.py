@@ -1,5 +1,4 @@
 from amaranth import *
-from amaranth.lib.fmt import log2_int
 
 class Registers(Module):
     def __init__(self):

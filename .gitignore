@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+
+*.vcd
+
+venv/
+
+build/*.v
+
+obj_dir/
+
+.DS_Store

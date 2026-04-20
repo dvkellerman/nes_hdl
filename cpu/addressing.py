@@ -1,12 +1,12 @@
 from amaranth import *
 from amaranth.lib.coding import *
 from cpu.opcodes import AddrMode
-
+from cpu import CPU
 class AddressingMode:
     """Addressing mode calculation for 6502 CPU."""
     
     @staticmethod
-    def calculate(m: Module, cpu) -> None:
+    def calculate(m: Module, cpu: CPU) -> None:
         """Add combinational logic to calculate effective address based on addressing mode."""
         
         with m.Switch(cpu.addr_mode):
