@@ -5,7 +5,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from amaranth import *
-from amaranth.sim import Simulator, Period
+from amaranth.sim import Simulator
 
 from cpu.cpu import CPU
 
