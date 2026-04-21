@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug test_cpu",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/tests/CPU/test_cpu.py",
+            "python": "${workspaceFolder}/venv/bin/python",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        }
+    ]
+}

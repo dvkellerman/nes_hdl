@@ -49,7 +49,7 @@ def main():
             print("FAILED!")
 
     sim = Simulator(cpu)
-    sim.add_clock(Period(MHz=1))
+    sim.add_clock(100_000)
     sim.add_testbench(bench)
     with sim.write_vcd("test_cpu.vcd"):
         sim.run()

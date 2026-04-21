@@ -18,20 +18,20 @@ class CPUState:
 class CPU(Component):
     """MOS 6502 CPU implementation in Amaranth HDL."""
 
-    bus: Out(CpuBus)
+    bus: Out(CpuBus())
 
     irq: In(1)
     nmi: In(1)
     rdy: In(1)
 
     def __init__(self):
-        self.a = Signal(8)
-        self.x = Signal(8)
-        self.y = Signal(8)
+        self.a  = Signal(8)
+        self.x  = Signal(8)
+        self.y  = Signal(8)
         self.sp = Signal(8)
         self.pc = Signal(16)
 
-        self.p = Signal(8)
+        self.p      = Signal(8)
         self.flag_n = Signal()
         self.flag_v = Signal()
         self.flag_b = Signal()
@@ -40,14 +40,14 @@ class CPU(Component):
         self.flag_z = Signal()
         self.flag_c = Signal()
 
-        self.state = Signal(3, init=CPUState.FETCH_OPCODE)
-        self.ir = Signal(8)
-        self.opcode = Signal(8)
-        self.operand = Signal(8)
+        self.state     = Signal(3, init=CPUState.FETCH_OPCODE)
+        self.ir        = Signal(8)
+        self.opcode    = Signal(8)
+        self.operand   = Signal(8)
         self.addr_temp = Signal(16)
-        self.eff_addr = Signal(16)
+        self.eff_addr  = Signal(16)
         self.addr_mode = Signal(4)
-        self.in_reset = Signal(init=1)
+        self.in_reset  = Signal(init=1)
 
         super().__init__()
 
